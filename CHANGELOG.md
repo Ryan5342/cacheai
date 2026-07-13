@@ -7,6 +7,8 @@
 - Adaptive TTL heuristic based on recent access frequency (not ML --
   see README for why, and for the benchmark showing when it actually helps).
 - `cache.invalidate(func, *args)` for manual eviction.
+- `cache.clear()` to wipe everything and reset stats (raises
+  `NotImplementedError` on Redis rather than silently leaving stale data).
 - `cache.stats()` for hits/misses/hit-rate.
 
 **Invalidation**
@@ -18,8 +20,13 @@
   Scoped to that ORM session -- raw SQL or other services aren't detected.
 
 **Validation**
-- 14 tests (core, Redis, tags, SQLAlchemy integration, and a full FastAPI
-  example) run in CI on Python 3.9-3.12 with a real Redis service container.
+- 22 tests (core, Redis, tags, SQLAlchemy integration, and a full FastAPI
+  example) run in CI on Python 3.9-3.12 with a real Redis service container,
+  with a 90% coverage floor enforced (currently at 100%). Coverage work
+  found real gaps: `clear()` existed on both backends but was never wired
+  up to the public API until now; constructor validation, the
+  non-JSON-serializable error path, and both optional-dependency
+  ImportError messages were previously untested.
 - `mypy --strict` is clean across the package (found and fixed 12 real
   issues in the process, including a backend interface that had no shared
   type, and two `set`-vs-`.set()`-method naming collisions).

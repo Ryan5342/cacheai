@@ -18,6 +18,7 @@ pytest -v                    # full suite (spins up SQLite in-memory; Redis
                               # and SQLAlchemy tests skip themselves if you
                               # don't have `redis`/`sqlalchemy` installed or
                               # a local Redis running on :6379)
+pytest --cov=adaptcache --cov-report=term-missing  # CI enforces a 90% floor
 mypy adaptcache/ --strict    # the codebase is fully typed and mypy-clean;
                               # PRs should keep it that way
 ```

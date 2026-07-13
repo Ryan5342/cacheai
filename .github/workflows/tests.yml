@@ -34,8 +34,8 @@ jobs:
       - name: Install adaptcache with dev dependencies
         run: pip install -e ".[dev]"
 
-      - name: Run tests
-        run: pytest -v
+      - name: Run tests with coverage
+        run: pytest -v --cov=adaptcache --cov-report=term-missing --cov-fail-under=90
 
       - name: Type check with mypy (strict)
         if: matrix.python-version == '3.12'

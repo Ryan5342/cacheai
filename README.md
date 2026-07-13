@@ -45,6 +45,10 @@ get_user_profile(123)  # hit: served from cache
 
 get_user_profile.invalidate(123)  # force a fresh read, e.g. right after an UPDATE
 print(cache.stats())  # {'hits': 1, 'misses': 1, 'hit_rate': 0.5, 'tracked_keys': 1}
+
+cache.clear()  # wipe everything and reset stats. Raises NotImplementedError
+               # on the Redis backend rather than silently leaving stale
+               # data behind -- see invalidate_tag() for a scoped version.
 ```
 
 Run `python demo.py` for a 10-second illustration of how the adaptive TTL

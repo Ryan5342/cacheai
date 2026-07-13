@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 redis = pytest.importorskip("redis")
@@ -59,3 +61,21 @@ def test_redis_backend_invalidate_tag():
 
     get_value(1)
     assert calls == [1, 1]  # cache_a's entry was still invalidated
+
+
+def test_clear_on_redis_backend_raises_not_implemented():
+    # AdaptCache.clear() propagates this instead of silently resetting
+    # Python-side stats while Redis still holds the stale data -- see the
+    # docstring on AdaptCache.clear().
+    cache = AdaptCache(backend="redis", redis_url=REDIS_URL)
+    with pytest.raises(NotImplementedError):
+        cache.clear()
+
+
+def test_missing_redis_py_gives_a_helpful_import_error(monkeypatch):
+    # Simulate `redis` not being installed (it's an optional extra) and
+    # check the error tells you how to fix it, instead of a bare
+    # ModuleNotFoundError.
+    monkeypatch.setitem(sys.modules, "redis", None)
+    with pytest.raises(ImportError, match=r"pip install adaptcache\[redis\]"):
+        AdaptCache(backend="redis", redis_url=REDIS_URL)

@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 sqlalchemy = pytest.importorskip("sqlalchemy")
@@ -75,3 +77,14 @@ def test_rollback_does_not_invalidate():
 
     get_all_user_names()
     assert calls == [1]  # still cached: nothing was actually committed
+
+
+def test_missing_sqlalchemy_gives_a_helpful_import_error(monkeypatch):
+    # watch_sqlalchemy() imports sqlalchemy lazily, inside the function --
+    # simulate it not being installed (it's an optional extra) and check
+    # the error tells you how to fix it.
+    Session = _make_session_class()
+    cache = AdaptCache(backend="memory", adaptive_ttl=False, default_ttl=300)
+    monkeypatch.setitem(sys.modules, "sqlalchemy", None)
+    with pytest.raises(ImportError, match=r"pip install adaptcache\[sqlalchemy\]"):
+        watch_sqlalchemy(cache, Session)

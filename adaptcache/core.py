@@ -120,6 +120,21 @@ class AdaptCache:
             self._backend.delete(cache_key)
         self._backend.tag_clear(tag)
 
+    def clear(self) -> None:
+        """Wipe every cached entry and reset stats/history. A blunt
+        instrument compared to invalidate()/invalidate_tag() -- prefer
+        those for anything narrower than "start over".
+
+        Raises NotImplementedError on the Redis backend (FLUSHDB is
+        dangerous on a shared instance) rather than silently resetting
+        Python-side stats while leaving stale data in Redis.
+        """
+        self._backend.clear()
+        self._history.clear()
+        self._known_keys.clear()
+        self._hits = 0
+        self._misses = 0
+
     def stats(self) -> Dict[str, Any]:
         total = self._hits + self._misses
         return {
