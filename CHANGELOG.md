@@ -20,16 +20,21 @@
   Scoped to that ORM session -- raw SQL or other services aren't detected.
 
 **Validation**
-- 22 tests (core, Redis, tags, SQLAlchemy integration, and a full FastAPI
+- 23 tests (core, Redis, tags, SQLAlchemy integration, and a full FastAPI
   example) run in CI on Python 3.9-3.12 with a real Redis service container,
-  with a 90% coverage floor enforced (currently at 100%). Coverage work
-  found real gaps: `clear()` existed on both backends but was never wired
-  up to the public API until now; constructor validation, the
-  non-JSON-serializable error path, and both optional-dependency
-  ImportError messages were previously untested.
+  with a 90% coverage floor enforced (currently at 100% on the package
+  itself). Coverage work found real gaps: `clear()` existed on both
+  backends but was never wired up to the public API until now; constructor
+  validation, the non-JSON-serializable error path, and both
+  optional-dependency ImportError messages were previously untested.
 - `mypy --strict` is clean across the package (found and fixed 12 real
   issues in the process, including a backend interface that had no shared
   type, and two `set`-vs-`.set()`-method naming collisions).
+- `ruff`, `black`, and `isort` all clean and enforced in CI. One real
+  catch: `pytest.importorskip()` in two test files needs its import to
+  come *after* the skip check, which trips a default lint rule -- silenced
+  explicitly per-file, with the reasoning written down, instead of
+  reordering code that's correct as written.
 - Package builds cleanly (`python -m build`) and passes `twine check`;
   installed the built wheel into a throwaway venv and confirmed it
   actually imports and runs. Not published to PyPI yet, but ready to be.

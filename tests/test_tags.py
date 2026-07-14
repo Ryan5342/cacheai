@@ -37,7 +37,7 @@ def test_invalidate_tag_does_not_affect_other_tags():
     get_orders()
 
     cache.invalidate_tag("orders")
-    get_users()   # still cached, untouched by the "orders" invalidation
+    get_users()  # still cached, untouched by the "orders" invalidation
     get_orders()  # recomputed
 
     assert user_calls == [1]

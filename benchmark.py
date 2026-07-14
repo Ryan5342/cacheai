@@ -92,7 +92,13 @@ def main() -> None:
         ),
         run_trace(
             trace,
-            cache=AdaptCache(backend="memory", adaptive_ttl=True, default_ttl=1, min_ttl=0.5, max_ttl=20),
+            cache=AdaptCache(
+                backend="memory",
+                adaptive_ttl=True,
+                default_ttl=1,
+                min_ttl=0.5,
+                max_ttl=20,
+            ),
             label="Adaptive TTL",
         ),
     ]

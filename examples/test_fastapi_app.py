@@ -33,3 +33,12 @@ def test_full_cycle_cache_hit_then_auto_invalidate_on_write():
     r4 = client.get("/users")
     assert r4.json() == [{"id": r3.json()["id"], "name": "Ana"}]
     assert cache.stats()["misses"] == misses_after_first + 1
+
+
+def test_cache_stats_endpoint_reflects_real_state():
+    r1 = client.get("/cache-stats")
+    assert r1.status_code == 200
+    body = r1.json()
+    assert set(body.keys()) == {"hits", "misses", "hit_rate", "tracked_keys"}
+    assert body["hits"] == cache.stats()["hits"]
+    assert body["misses"] == cache.stats()["misses"]

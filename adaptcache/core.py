@@ -68,7 +68,9 @@ class AdaptCache:
             @wraps(func)
             def wrapper(*args: Any, **kwargs: Any) -> Any:
                 fingerprint = self._fingerprint(func, args, kwargs)
-                cache_key = f"adaptcache:{func.__module__}.{func.__qualname__}:{fingerprint}"
+                cache_key = (
+                    f"adaptcache:{func.__module__}.{func.__qualname__}:{fingerprint}"
+                )
                 self._known_keys[fingerprint] = cache_key
 
                 cached = self._backend.get(cache_key)
@@ -166,5 +168,5 @@ class AdaptCache:
         if avg_gap <= 0:
             return self.max_ttl
 
-        ttl = int((self.default_ttl ** 2) / avg_gap)
+        ttl = int((self.default_ttl**2) / avg_gap)
         return max(self.min_ttl, min(self.max_ttl, ttl))

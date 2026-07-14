@@ -55,8 +55,12 @@ engine = create_engine(
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
-cache = AdaptCache(backend="memory", adaptive_ttl=True, default_ttl=30, min_ttl=5, max_ttl=300)
-watch_sqlalchemy(cache, Session)  # commits through this Session auto-invalidate tagged entries
+cache = AdaptCache(
+    backend="memory", adaptive_ttl=True, default_ttl=30, min_ttl=5, max_ttl=300
+)
+watch_sqlalchemy(
+    cache, Session
+)  # commits through this Session auto-invalidate tagged entries
 
 app = FastAPI(title="adaptcache example")
 

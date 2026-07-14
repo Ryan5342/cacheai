@@ -23,7 +23,9 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_redis_backend_hit_and_invalidate():
-    cache = AdaptCache(backend="redis", redis_url=REDIS_URL, adaptive_ttl=False, default_ttl=5)
+    cache = AdaptCache(
+        backend="redis", redis_url=REDIS_URL, adaptive_ttl=False, default_ttl=5
+    )
     calls = []
 
     @cache.intelligent()
@@ -44,8 +46,12 @@ def test_redis_backend_invalidate_tag():
     # Two separate AdaptCache instances against the same Redis, simulating two
     # worker processes -- this is the scenario in-process-only tags would
     # break, since tag membership must live in Redis, not in either process.
-    cache_a = AdaptCache(backend="redis", redis_url=REDIS_URL, adaptive_ttl=False, default_ttl=5)
-    cache_b = AdaptCache(backend="redis", redis_url=REDIS_URL, adaptive_ttl=False, default_ttl=5)
+    cache_a = AdaptCache(
+        backend="redis", redis_url=REDIS_URL, adaptive_ttl=False, default_ttl=5
+    )
+    cache_b = AdaptCache(
+        backend="redis", redis_url=REDIS_URL, adaptive_ttl=False, default_ttl=5
+    )
     calls = []
 
     @cache_a.intelligent(tags=["users"])

@@ -113,7 +113,9 @@ def test_adaptive_ttl_non_positive_gap_returns_max_ttl():
     # timestamp (or, in principle, a backwards clock adjustment), avg_gap
     # is <= 0. Treat that as "as hot as it gets" rather than dividing by
     # zero or returning something nonsensical.
-    cache = AdaptCache(backend="memory", adaptive_ttl=True, default_ttl=60, min_ttl=5, max_ttl=1800)
+    cache = AdaptCache(
+        backend="memory", adaptive_ttl=True, default_ttl=60, min_ttl=5, max_ttl=1800
+    )
 
     @cache.intelligent()
     def get_value(x):
@@ -129,7 +131,9 @@ def test_adaptive_ttl_non_positive_gap_returns_max_ttl():
 
 
 def test_adaptive_ttl_grows_for_frequently_accessed_key():
-    cache = AdaptCache(backend="memory", adaptive_ttl=True, default_ttl=60, min_ttl=5, max_ttl=1800)
+    cache = AdaptCache(
+        backend="memory", adaptive_ttl=True, default_ttl=60, min_ttl=5, max_ttl=1800
+    )
 
     @cache.intelligent()
     def get_value(x):
@@ -139,14 +143,18 @@ def test_adaptive_ttl_grows_for_frequently_accessed_key():
     fingerprint = cache._fingerprint(get_value.__wrapped__, (1,), {})
     now = time.time()
     cache._history[fingerprint].clear()
-    cache._history[fingerprint].extend([now + i * 2 for i in range(10)])  # accessed every ~2s
+    cache._history[fingerprint].extend(
+        [now + i * 2 for i in range(10)]
+    )  # accessed every ~2s
 
     ttl = cache._adaptive_ttl(fingerprint)
     assert ttl > cache.default_ttl
 
 
 def test_adaptive_ttl_shrinks_for_rarely_accessed_key():
-    cache = AdaptCache(backend="memory", adaptive_ttl=True, default_ttl=60, min_ttl=5, max_ttl=1800)
+    cache = AdaptCache(
+        backend="memory", adaptive_ttl=True, default_ttl=60, min_ttl=5, max_ttl=1800
+    )
 
     @cache.intelligent()
     def get_value(x):

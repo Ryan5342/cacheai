@@ -40,3 +40,10 @@ jobs:
       - name: Type check with mypy (strict)
         if: matrix.python-version == '3.12'
         run: mypy adaptcache/ --strict
+
+      - name: Lint and format check (ruff, black, isort)
+        if: matrix.python-version == '3.12'
+        run: |
+          ruff check .
+          black --check .
+          isort --check .
