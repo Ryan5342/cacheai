@@ -159,6 +159,25 @@ Covered by its own end-to-end test in `examples/test_fastapi_app.py`, and
 by CI on every push (`.github/workflows/tests.yml`, Python 3.9-3.12, with
 a real Redis service container).
 
+## Thread safety
+
+`MemoryBackend` is safe under concurrent access **in standard CPython**,
+where the GIL serializes bytecode execution. This was stress-tested, not
+assumed: 300 trials of 20-50 threads simultaneously hitting an
+already-expired key (checking for a delete-after-delete race), and 50
+trials of concurrent calls hammering the same cache key (checking for
+lost hit/miss counts) -- zero failures across both. `tests/test_concurrency.py`
+keeps a fast version of both as a permanent regression check.
+
+**The honest limit:** this safety comes from the GIL, not from explicit
+locking in this codebase. It would not hold on a free-threaded
+(`--disable-gil`) CPython build. If you're running on one of those, treat
+`MemoryBackend` as untested there.
+
+`RedisBackend`'s safety is really redis-py's to guarantee (a single
+`redis.Redis` client is safe to share across threads per its own docs);
+this project doesn't re-verify that.
+
 ## Roadmap
 
 - [x] Tag-based invalidation, safe across processes with the Redis backend

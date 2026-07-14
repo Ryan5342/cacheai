@@ -11,6 +11,17 @@
   `NotImplementedError` on Redis rather than silently leaving stale data).
 - `cache.stats()` for hits/misses/hit-rate.
 
+**Concurrency**
+- Stress-tested `MemoryBackend` under real threads (not mocks): 300 trials
+  of concurrent access to an already-expired key, and 50 trials of
+  concurrent hits on the same key checking for lost counter updates.
+  Zero failures in either, under standard CPython. Fixed one real
+  footgun found along the way regardless: `get()` used `del` on an
+  expired key, which could raise `KeyError` if two threads both passed
+  the expiry check before either deleted it -- switched to `pop(key, None)`
+  to make it idempotent. See README's Thread safety section for the
+  honest limits (this relies on the GIL, not explicit locking).
+
 **Invalidation**
 - Tag-based invalidation: `@cache.intelligent(tags=[...])` +
   `cache.invalidate_tag(...)`. Safe across processes on the Redis backend

@@ -42,7 +42,12 @@ class MemoryBackend:
             return None
         value, expires_at = entry
         if expires_at < time.time():
-            del self._store[key]
+            # pop(key, None) instead of del: if another thread already
+            # expired and removed this same key between our check above and
+            # this line, del would raise KeyError. pop makes the removal
+            # idempotent, closing that window regardless of how likely it
+            # is to happen in practice under the GIL.
+            self._store.pop(key, None)
             return None
         return value
 
