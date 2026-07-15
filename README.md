@@ -182,6 +182,23 @@ locking in this codebase. It would not hold on a free-threaded
 `redis.Redis` client is safe to share across threads per its own docs);
 this project doesn't re-verify that.
 
+## How this compares
+
+**[`cachetools`](https://pypi.org/project/cachetools/)** is the closest
+comparison -- mature, widely used, `@cached` decorator with `TTLCache`/
+`LRUCache`. If you just need a fixed TTL or LRU eviction in one process,
+it's simpler and far more battle-tested than this. AdaptCache adds three
+things it doesn't have: TTL that adjusts itself per key instead of one
+fixed value, a Redis backend so the cache is shared across processes, and
+tag-based invalidation (including automatic invalidation on SQLAlchemy
+commits). If you don't need those specifically, `cachetools` is probably
+the better default choice.
+
+**`dogpile.cache`** and Django's built-in cache framework cover similar
+ground (multiple backends, TTL) with a longer track record. AdaptCache is
+smaller in scope and newer -- the tradeoff is a simpler API and the
+adaptive-TTL heuristic, at the cost of ecosystem maturity.
+
 ## Roadmap
 
 - [x] Tag-based invalidation, safe across processes with the Redis backend
